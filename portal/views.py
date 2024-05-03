@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
 
+
 # Create your views here.
 
 class AboutView(TemplateView):
@@ -9,7 +10,6 @@ class AboutView(TemplateView):
 # views.py
 from django.shortcuts import render
 from django.views import View
-from .forms import BillCreationForm
 from .models import Location, Product, Bill, Printer
 
 def PortalView(request, location_name=None, kiosk=False):
@@ -30,17 +30,7 @@ def BillCreationView(request, location_name=None):
             except Location.DoesNotExist:
                 location = None
                 print(f'Location not found in POST: {location_name}' )
-            post['location'] = location
-        form = BillCreationForm(post)
-        if form.is_valid():
-            # Save the bill, get the printer from the location, and print it
-            bill = form.save()
-            printer = bill.location.printer
-            text = f'Bill: {bill.temp_name}\n'
-            for product in Product.objects.filter(location=bill.location):
-                text += f'{product.name}: {product.price_per_unit}\n'
-            if printer:
-                printer.print_text(text)
+            post['location'] = location.id
                 
             
             
@@ -49,7 +39,7 @@ def BillCreationView(request, location_name=None):
             alert_message = 'Bill created successfully'
         else:
             alert_kind = 'danger'
-            alert_message = f'Bill creation failed: {form.errors}'
+            alert_message = f'Bill creation failed'
             
     else:
         try:
@@ -59,9 +49,18 @@ def BillCreationView(request, location_name=None):
             location = None
             print(f'Location not found in GET: {location_name}' )
         alert_kind, alert_message = None, None
-        form = BillCreationForm(initial={'location': location})
     if location:
         locations = [location]
     else:
         locations = Location.objects.all()
-    return render(request, 'bill_creation.html', {'form': form, 'locations': locations, 'alert_message': alert_message, 'alert_kind': alert_kind, 'location_name': location_name})
+    return render(request, 'bill_creation.html', {'locations': locations, 'alert_message': alert_message, 'alert_kind': alert_kind, 'location_name': location_name})
+
+def get_bill_item(request):
+    if request.method == 'GET':
+        print(f'GET: {request.GET}')
+        if request.GET.get('location'):
+            products = Product.objects.filter(location__id=request.GET.get('location'))
+        else:
+            print('No location in GET')
+            return render(request, 'bill_item.html', {'products': None, 'location': request.GET.get('location')})
+        return render(request, 'bill_item.html', {'products': products, 'location': request.GET.get('location')})

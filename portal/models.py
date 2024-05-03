@@ -72,9 +72,9 @@ class Product(models.Model):
 
 
 class Bill(models.Model):
-    temp_name = models.CharField(max_length=255, null=True, blank=True)
+    customer = models.CharField(max_length=255, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now=True)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, blank=False)
     # customer
     # mentor
 
