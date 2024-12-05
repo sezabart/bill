@@ -14,7 +14,9 @@ media/
 
 # Development files
 *.log
-db.sqlite3
+*.db
+*.db_shm
+*.db_wal
 
 # IDE files
 .vscode/
