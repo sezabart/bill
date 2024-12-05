@@ -78,12 +78,12 @@ def get():
     return Titled("🛠️ FabLab's Bill 💶", frm)
 
 @rt("/material_select_row")
-def material_select_row():
+def material_select_row(search: str=None, order_by: str='category'):
     return Tr(
                 Td(
                     Select(
                         Option('Select a material', value='', disabled=True, selected=True),
-                        *[Option(f"{m.nice_name} [{m.unit}]", value=m.id) for m in materials(order_by='category')],
+                        *[Option(f"{m.nice_name} [{m.unit}]", value=m.id) for m in materials(search, order_by=order_by)],
                     name='material',
                     ),
                 ),
