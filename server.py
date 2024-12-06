@@ -33,7 +33,8 @@ if categories not in db.t:
         pk='id'
     )
     categories.insert(name='3D Filament', unit='g')
-    categories.insert(name='Laser Cutting', unit='mm²')
+    categories.insert(name='3D Resin', unit='ml')
+    categories.insert(name='PCB', unit='mm²')
 
 if materials not in db.t:
     materials.create(
@@ -44,10 +45,11 @@ if materials not in db.t:
         cost_per_unit=float,
         pk='id'
     )
-    materials.insert(category=1, nice_name='PLA', system_name='pla', cost_per_unit=0.05)
-    materials.insert(category=1, nice_name='PETG', system_name='petg', cost_per_unit=0.05)
-    materials.insert(category=2, nice_name='Acrylic', system_name='acrylic', cost_per_unit=0.05)
-    materials.insert(category=2, nice_name='Plywood', system_name='plywood', cost_per_unit=0.05)
+    materials.insert(category=1, nice_name='PLA', system_name='STO3D-INT-FIL3', cost_per_unit=0.04)
+    materials.insert(category=1, nice_name='PETG', system_name='STO3D-INT-FIL3', cost_per_unit=0.04)
+    materials.insert(category=2, nice_name='Resin', system_name='STO3D-INT-SMOLA', cost_per_unit=0.06)
+    materials.insert(category=2, nice_name='Fancy Resin', system_name='STO3D-INT-SMOLA2', cost_per_unit=0.72)
+    materials.insert(category=3, nice_name='GFR4 blank', system_name='GFR4', cost_per_unit=0.05)
 
 # Create a dataclass for the bills table entries
 Bill, Category, Material = bills.dataclass(), categories.dataclass(), materials.dataclass()
@@ -97,7 +99,8 @@ def get():
         ),
         Button('Save & Print'),
         P('Printing...', id="printing", cls="htmx-indicator"),
-        hx_post='/print', hx_swap='afterend', hx_indicator="#printing",
+        P(id='indicator'),
+        hx_post='/print', hx_swap='innerHTML', hx_target='#indicator', hx_indicator="#printing",
         name='material_bill'
     )
 
@@ -123,16 +126,53 @@ def material_select_row(category: str=None):
                     ),
                 ),
                 Td(
-                    Input(type='number', name='quantity', autocomplete="off",),
+                    Input(type='number', name='quantity', autocomplete="off", max=99999, min=0, required=True),
                     style='max-width: 50px;'
                 ),
                 Td(unit),
             )
 
-@rt("/save") # Make the Bill entry including calculated costs.
+#@rt("/save") # Make the Bill entry including calculated costs.
+
+
+from relatorio.templates.opendocument import Template
+import subprocess
+basic = Template(source='', filepath='basic.odt')
+
 
 @rt("/print")
 def post(user: str, material: list[int], quantity: list[int]):
-    pass
+    data = {
+        'user': user,
+        'lines': [{
+            'nice_name': materials[m].nice_name, 
+            'system_name': materials[m].system_name,
+            'quantity': f'{q}{categories[materials[m].category].unit}', 
+            'cost_per_unit': f'{materials[m].cost_per_unit}/{categories[materials[m].category].unit}', 
+            'cost': f'{q * materials[m].cost_per_unit:.2f}',
+            } for m, q in zip(material, quantity)],
+        'total': f'{sum([q * materials[m].cost_per_unit for m, q in zip(material, quantity)]):.2f}',
+        'timestamp': datetime.datetime.now().strftime('Printed on %Y-%m-%d at %H:%M:%S'),
+    }
+    print(data)
+    open('filled_basic.odt', 'wb').write(basic.generate(o=data).render().getvalue())
+    return print_file('filled_basic.odt')
+
+
+def print_file(file: str):
+    if not os.path.exists(file):
+        # Log this error
+        return 'File not found.'
+    if not file.endswith('.odt'):
+        # Log this error
+        return 'Invalid file type.'
+    try:
+        result = subprocess.run(['lowriter', '-p', f'{file}'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(result.stdout.decode())
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred: {e.stderr.decode()}")
+    return 'Printed successfully.'
+
+
 
 serve() # Start the server
