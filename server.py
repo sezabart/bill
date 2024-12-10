@@ -93,7 +93,6 @@ def get():
             Tr(
                 Th('Material'),
                 Th('Quantity'),
-                Th('Unit'),
             ),
             id='material_select_rows'
         ),
@@ -112,16 +111,19 @@ def material_select_row(category: str=None):
         cat = categories[category]
         search_arg = {'where': f"category='{cat.id}'"}
         category = cat.name
-        unit = f' [{cat.unit}]'
+        unit = str(cat.unit)
     else:
         search_arg = {'order_by': 'category'}
         unit = ''
+
+    # TODO: Remove the category from the select options and implement it as groupings in the select options below.
+    # Reason: not that many choices to warrant a separate select for category.
     
     return Tr(
                 Td(
                     Select(
-                        Option(f'Select {category} material', value='', disabled=True, selected=True),
-                        *[Option(f"{m.nice_name}", value=m.id) for m in materials(**search_arg)],
+                        Option(f'Select {category} material', value='', disabled=True, selected=True, hidden=True),
+                        *[Option(f"{m.nice_name} [{unit}]", value=m.id) for m in materials(**search_arg)],
                     name='material',
                     ),
                 ),
@@ -129,7 +131,9 @@ def material_select_row(category: str=None):
                     Input(type='number', name='quantity', autocomplete="off", max=99999, min=0, required=True),
                     style='max-width: 50px;'
                 ),
-                Td(unit),
+                Td(
+                    Button('-', type='button', style='max-width: 50px;', onclick='this.closest("tr").remove();')
+                )
             )
 
 #@rt("/save") # Make the Bill entry including calculated costs.
