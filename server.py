@@ -88,7 +88,7 @@ def material_form():
                 Th('Material'),
                 Th('Quantity'),
             ),
-            material_select_row(),
+            material_select_row(required=True),
             id='material_select_rows'
         ),
         Button('Save & Print'),
@@ -101,10 +101,7 @@ def material_form():
     )
 
 @rt("/material_select_row")
-def material_select_row():
-
-    # TODO: Remove the category from the select options and implement it as groupings in the select options below.
-    # Reason: not that many choices to warrant a separate select for category.
+def material_select_row(required: bool = False):
     
     options = [Option('Select a material', hidden=True, disabled=True, selected=True)]
     for c in categories():
@@ -116,17 +113,18 @@ def material_select_row():
                 Td(
                     Select(
                         *options,
-                    name='material', autocomplete="off",
+                    name='material', autocomplete="off", required=required,
                     hx_trigger='change once', hx_get='/material_select_row', hx_target='#material_select_rows', hx_swap='beforeend',
                     ),
                 ),
                 Td(
-                    Input(type='number', name='quantity', autocomplete="off", max=99999, min=0),
+                    Input(type='number', name='quantity', autocomplete="off", max=99999, min=0, required=required),
                     style='max-width: 50px;'
                 ),
                 Td(
-                    Button('-', type='button', style='max-width: 50px;', onclick='this.closest("tr").remove();')
-                )
+                    P('-', type='button', onclick='this.closest("tr").remove();', style='border: 1px solid grey; padding: 5px; background: none;') if not required else 
+                    P('+', type='button', hx_trigger='click', hx_get='/material_select_row', hx_target='#material_select_rows', hx_swap='beforeend', style='border: 1px solid grey; padding: 5px; background: none;')
+                ) 
             )
 
 #@rt("/save") # Make the Bill entry including calculated costs.
@@ -147,7 +145,7 @@ def post(user: str, material: list[int], quantity: list[int]):
             'quantity': f'{q}{categories[materials[m].category].unit}', 
             'cost_per_unit': f'{materials[m].cost_per_unit}/{categories[materials[m].category].unit}', 
             'cost': f'{q * materials[m].cost_per_unit:.2f}',
-            } for m, q in zip(material, quantity)],
+            } for m, q in zip(material, quantity) if m and q],
         'total': f'{sum([q * materials[m].cost_per_unit for m, q in zip(material, quantity)]):.2f}',
         'timestamp': datetime.datetime.now().strftime('Printed on %Y-%m-%d at %H:%M:%S'),
     }
