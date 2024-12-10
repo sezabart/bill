@@ -73,62 +73,55 @@ rt = app.route
 
 @rt("/") # Index page
 def get():
-    frm = Form(
+    return Titled("🛠️ FabLab's Bill 💶", material_form(), style='text-align:center; max-width: 600px;')
+
+def material_form():
+    return Form(
         H3('Create a material bill:'),
-        Group(H5('User:'), Input(name='user', placeholder='First & Last Name', required=True, autocomplete="off", style='max-width: 200px;')),
-        Group(H5('Category:'), 
-            Select(
-                Option('Select a category', value='', disabled=True, selected=True, ),
-                *[Option(c.name, value=c.id) for c in categories()],
-                name='category',
-                required=True,
-                autocomplete="off",
-                style='max-width: 200px;',
-                hx_get='/material_select_row', hx_trigger='change, click from:next button', hx_target='#material_select_rows', hx_swap='beforeend', hx_include='category'
-            ),
-            Button('+', type='button', style='max-width: 50px;')
-            
+        Div(
+            H5('User:', style='display: inline-block; vertical-align: middle; margin-right: 10px;'),
+            Input(name='user', placeholder='First & Last Name', required=True, autocomplete="off", style='display: inline-block; vertical-align: middle; max-width: 200px;'),
+            style='text-align: center; margin-bottom: 20px;'
         ),
         Table(
             Tr(
                 Th('Material'),
                 Th('Quantity'),
             ),
+            material_select_row(),
             id='material_select_rows'
         ),
         Button('Save & Print'),
         P('Printing...', id="printing", cls="htmx-indicator"),
-        P(id='indicator'),
-        hx_post='/print', hx_swap='innerHTML', hx_target='#indicator', hx_indicator="#printing",
+
+        hx_indicator="#printing",
+        hx_post='/print', 
+        hx_swap='outerHTML', 
         name='material_bill'
     )
 
-    return Titled("🛠️ FabLab's Bill 💶", frm)
-
 @rt("/material_select_row")
-def material_select_row(category: str=None):
-    if category:
-        cat = categories[category]
-        search_arg = {'where': f"category='{cat.id}'"}
-        category = cat.name
-        unit = str(cat.unit)
-    else:
-        search_arg = {'order_by': 'category'}
-        unit = ''
+def material_select_row():
 
     # TODO: Remove the category from the select options and implement it as groupings in the select options below.
     # Reason: not that many choices to warrant a separate select for category.
     
+    options = [Option('Select a material', hidden=True, disabled=True, selected=True)]
+    for c in categories():
+        options.append(Option(f'--{c.name}--', disabled=True))
+        for m in materials(where=f"category='{c.id}'"):
+            options.append(Option(f'{m.nice_name} [{c.unit}]', value=m.id))
+
     return Tr(
                 Td(
                     Select(
-                        Option(f'Select {category} material', value='', disabled=True, selected=True, hidden=True),
-                        *[Option(f"{m.nice_name} [{unit}]", value=m.id) for m in materials(**search_arg)],
-                    name='material',
+                        *options,
+                    name='material', autocomplete="off",
+                    hx_trigger='change once', hx_get='/material_select_row', hx_target='#material_select_rows', hx_swap='beforeend',
                     ),
                 ),
                 Td(
-                    Input(type='number', name='quantity', autocomplete="off", max=99999, min=0, required=True),
+                    Input(type='number', name='quantity', autocomplete="off", max=99999, min=0),
                     style='max-width: 50px;'
                 ),
                 Td(
@@ -158,7 +151,6 @@ def post(user: str, material: list[int], quantity: list[int]):
         'total': f'{sum([q * materials[m].cost_per_unit for m, q in zip(material, quantity)]):.2f}',
         'timestamp': datetime.datetime.now().strftime('Printed on %Y-%m-%d at %H:%M:%S'),
     }
-    print(data)
     open('filled_basic.odt', 'wb').write(basic.generate(o=data).render().getvalue())
     return print_file('filled_basic.odt')
 
@@ -175,7 +167,8 @@ def print_file(file: str):
         print(result.stdout.decode())
     except subprocess.CalledProcessError as e:
         print(f"Error occurred: {e.stderr.decode()}")
-    return 'Printed successfully.'
+        return 'Error occurred while printing, contact the administrator.'
+    return material_form()
 
 
 
