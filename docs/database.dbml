@@ -2,26 +2,34 @@ Table bills {
     id int [pk, increment]
     lab_id int
     user varchar
+    data text
+    total float
     created_at datetime
     valid boolean
     paid boolean
 }
 
 Table bill_materials {
-        bill_id int [ref: > bills.id]
-        material_id int [ref: > materials.id]
-        quantity int
+    bill_id int [ref: > bills.id]
+    material_id int [ref: > materials.id]
+    quantity int
 
-        indexes {
-            (bill_id, material_id) [unique]
-        }
+    indexes {
+        (bill_id, material_id) [unique]
     }
+}
+
+Table categories {
+    id int [pk, increment]
+    name varchar
+    unit varchar
+}
 
 Table materials {
     id int [pk, increment]
+    category int [ref: > categories.id]
     nice_name varchar
     system_name varchar
-    unit varchar
-    cost_per_unit decimal
+    cost_per_unit float
 }
 

@@ -26,11 +26,3 @@ Use a little camera, display and button to let people take a selfie, which gets 
 
 ## Printer Status RGB
 Use the printer status that will already be collected for filament and use the status value to drive a strip of WS2811 LED's above the printers. Green for available, orange for attention, etc etc.
-
-# Implementation
-As of december 2024 the idea is to have a RPi 3B connected via USB to a TSP100 thermal printer.
-
-## Components
-
-### Printing
-Best option 
