@@ -55,6 +55,8 @@ Add the following content, replacing placeholders with your project details:
 [Unit]
 Description=bill
 
+# TODO: apt update & upgrade, git pull, source bin activate, python server.py
+
 [Service]
 ExecStart=/usr/bin/python3 /home/admin/bill/server.py
 WorkingDirectory=/home/admin/bill
