@@ -17,20 +17,22 @@ sudo apt upgrade -y
 ### 2. Install Required Packages
 Install necessary packages for your project. For example:
 ```sh
-sudo apt install -y git python3 python3-pip
+sudo apt install -y git python3 python3-pip libreoffice-core-nogui
 ```
+That last one is big and might take a while.
 
 ### 3. Clone the Project Repository
 
 ```sh
-git clone github.com/sezabart/bill
+git clone https://github.com/sezabart/bill
 cd bill
 ```
 
-### 4. Install Project Dependencies
-If your project has dependencies listed in a `requirements.txt` file:
+### 4. Install Virtual Environment and Project Dependencies
 ```sh
-pip3 install -r requirements.txt
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ### 5. Configure the Project
@@ -39,7 +41,7 @@ Nothing special yet
 ### 6. Run the Project
 Start your project using the appropriate command. For example:
 ```sh
-python3 server.py
+python server.py
 ```
 
 ### 7. Enable Autostart (Optional)
