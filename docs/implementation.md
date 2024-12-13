@@ -17,7 +17,8 @@ sudo apt upgrade -y
 ### 2. Install Required Packages
 Install necessary packages for your project. For example:
 ```sh
-sudo apt install -y git python3 python3-pip libreoffice-core-nogui
+sudo apt install -y git python3 python3-pip 
+sudo apt install -y libreoffice-writer-nogui
 ```
 That last one is big and might take a while.
 
@@ -35,8 +36,8 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. Configure the Project
-Nothing special yet
+### 5. Configure
+---
 
 ### 6. Run the Project
 Start your project using the appropriate command. For example:
@@ -68,6 +69,9 @@ Enable the service:
 sudo systemctl enable bill.service
 sudo systemctl start bill.service
 ```
+
+### 8. Install CUPS and the driver
+
 
 ## Conclusion
 Your project should now be running on the Raspberry Pi 3B+ with RPi OS Bookworm 32-bit Lite. Ensure to monitor the logs and performance to make any necessary adjustments.

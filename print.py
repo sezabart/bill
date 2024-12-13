@@ -35,7 +35,7 @@ def print_file(file: str):
         print(f"Invalid file type: {file}")
         return {'Invalid file type.': True}
     try:
-        subprocess.run(['lowriter', '-p', f'{file}'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(['libreoffice', '--writer', '-p', f'{file}'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
         print(f"Error occurred: {e.stderr.decode()}")
         return {'Error occurred while printing, contact the administrator.': True}
