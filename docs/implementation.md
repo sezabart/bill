@@ -1,13 +1,15 @@
-# Project Implementation on Raspberry Pi 3B+
+# Project Implementation on Orange Pi Zero
 
 ## Prerequisites
-- Raspberry Pi 3B+
-- RPi OS Bookworm 32-bit Lite installed
-- Internet connection
-- SSH access (optional but recommended)
+- ARM mi
+- Armbian Bookworm or better
+- Internet connection during installation
+- SSH access
 - TSP100 Thermal Printer, from step 8 onwards.
 
 ## Step-by-Step Implementation
+
+### 0. Install your OS and establish SSH connection
 
 ### 1. Update and Upgrade the System
 
@@ -37,48 +39,63 @@ cd bill
 ```sh
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+```
+Dont install uvloop
+apsw takes a looong time
+relatatorio takes a loooong time
+
+```sh
+pip install apsw==3.44.2.0 --no-cache-dir --no-binary apsw
+
+sudo apt-get install libxml2-dev libxslt-dev
+
+pip install relatorio
+
+pip install python-fasthtml
 ```
 
 ### 5. Enable Autostart (Optional)
 
 To run your project on boot, you can create a systemd service:
 ```sh
-sudo nano /etc/systemd/system/bill.service
+sudo nano /etc/rc.local
 
 ```
-Add the following content, replacing placeholders with your project details:
-```ini
-[Unit]
-Description=bill
-
-[Service]
-ExecStartPre=/usr/bin/apt update
-ExecStartPre=/usr/bin/apt upgrade -y
-ExecStartPre=/usr/bin/git -C /home/<user>/bill pull
-ExecStartPre=/bin/bash -c 'source /home/<user>/bill/venv/bin/activate'
-ExecStart=/bin/bash -c 'source /home/<user>/bill/venv/bin/activate && python /home/<user>/bill/server.py'
-WorkingDirectory=/home/<user>/bill
-Restart=always
-User=<user>
-
-[Install]
-WantedBy=multi-user.target
-```
-Enable the service:
+Add the following content between the comments and `exit 0`
 ```sh
-sudo systemctl enable bill.service
-sudo systemctl start bill.service
+(
+  cd /root/bill
+  venv/bin/python server.py
+)
+```
+Adjust the permissions.
+```sh
+chmod -R 7445 /root/bill/
 ```
 
-### 8. Clone drivers for thermal printer
+### 8. Install CUPS
+
+```sh
+sudo apt install cups libcups2-dev
+sudo cupsctl --remote-any
+sudo /etc/init.d/cups restart
+```
+
+### 9. Clone drivers for thermal printer
 
 ```sh
 git clone https://github.com/sezabart/TSP100-Ubuntu-Debian-driver
 cd TSP100-Ubuntu-Debian-driver
 ```
+Compile and install driver
+```sh
+tar -zxvf Star-CUPS-Driver-src-XXX.tar.gz
+cd Star-CUPS-Driver
+sudo make
+sudo make install
+```
 
-### 9. Install driver
+### 10. Install driver
 
 ```sh
 sudo chmod +X star-cups-driver_......
@@ -86,15 +103,8 @@ sudo dpkg -i star-cups-driver_....
 ```
 Auto-complete using `tab` is your friend.
 
-### 10. Install CUPS
 
-```sh
-sudo apt install cups
-```
-If you are able to visit the webpage locally, proceed to 11. 
-Else to configure over the network, we need to allow access.
 
- TODO: add file to repo 
 Copy over the conf
 ### 11. Configure CUPS
 
