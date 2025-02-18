@@ -111,7 +111,7 @@ def message(messages: dict[str, bool]):
 
 @rt("/static/{file:str}")
 def static(file:str):
-    if not file.endswith('.css', '.js'):
+    if not file.endswith('.css') and not file.endswith('.js'):
         return Response('File not found.', status_code=404)
     return FileResponse(f'static/{file}')
 
