@@ -1,6 +1,6 @@
 from fasthtml.common import (
     A, AX, Button, Card, CheckboxX, Container, Div, Form, Grid, Group, P, H1, H2, H3, H4, H5, Hr, Hidden, Input, Li, Ul, Style, Textarea, Title, Titled, Select, Option, Table, Tr, Th, Td,
-    FastHTML, picolink, serve,
+    FastHTML, picolink, serve, Link, FileResponse, Response,
 )
 
 # Simple 404 handler, which will return a  error page.
@@ -10,7 +10,7 @@ def _not_found(req, exc): return Titled('Oh no!', Div('We could not find that pa
 app = FastHTML(exception_handlers={404: _not_found},
                # PicoCSS is a tiny CSS framework that we'll use for this project.
                # `picolink` is pre-defined with the header for the PicoCSS stylesheet.
-               hdrs=(picolink)
+               hdrs=(Link(rel="stylesheet", href="/static/pico.css")),
       )
 # Decorator for url routing
 rt = app.route
@@ -105,5 +105,10 @@ def message(messages: dict[str, bool]):
              ) for msg, err in messages.items()],
     )
 
+@rt("/static/{file:str}")
+def static(file:str):
+    if not file.endswith('.css'):
+        return Response('File not found.', status_code=404)
+    return FileResponse(f'static/{file}')
 
 serve() # Start the server
