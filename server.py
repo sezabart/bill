@@ -1,6 +1,6 @@
 from fasthtml.common import (
     A, AX, Button, Card, CheckboxX, Container, Div, Form, Grid, Group, P, H1, H2, H3, H4, H5, Hr, Hidden, Input, Li, Ul, Style, Textarea, Title, Titled, Select, Option, Table, Tr, Th, Td,
-    FastHTML, picolink, serve, Link, Script, FileResponse, Response,
+    FastHTML, picolink, serve, Link, Script, Meta, FileResponse, Response,
 )
 
 # Simple 404 handler, which will return a  error page.
@@ -10,6 +10,7 @@ def _not_found(req, exc): return Titled('Oh no!', Div('We could not find that pa
 app = FastHTML(exception_handlers={404: _not_found},
                default_hdrs=False,
                hdrs=(
+                   Meta(name="viewport", content="width=device-width, initial-scale=1, viewport-fit=cover"),
                    Link(rel="stylesheet", href="/static/pico.css"),
                    Script(src="/static/htmx.js"),
                    Script(src="/static/fasthtml.js"),
