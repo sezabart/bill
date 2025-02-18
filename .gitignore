@@ -20,3 +20,9 @@
 # Dependency directories
 venv/
 env/
+
+# Images
+.img
+
+# Filled
+filled_en_fablab.odt
