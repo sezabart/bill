@@ -8,8 +8,7 @@ def _not_found(req, exc): return Titled('Oh no!', Div('We could not find that pa
 
 # FastHTML includes the "HTMX" library in the header by default.
 app = FastHTML(exception_handlers={404: _not_found},
-               # PicoCSS is a tiny CSS framework that we'll use for this project.
-               # `picolink` is pre-defined with the header for the PicoCSS stylesheet.
+               default_hdrs=False,
                hdrs=(
                    Link(rel="stylesheet", href="/static/pico.css"),
                    Script(src="/static/htmx.js"),
