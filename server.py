@@ -2,7 +2,7 @@ from fasthtml.common import (
     A, AX, Button, Card, CheckboxX, Container, Div, Form, Grid, Group, P, H1, H2, H3, H4, H5, Hr, Hidden, Input, Li, Ul, Style, Textarea, Title, Titled, Select, Option, Table, Tr, Th, Td,
     FastHTML, picolink, serve, Link, Script, Meta, FileResponse, Response,
 )
-
+import os
 # Simple 404 handler, which will return a  error page.
 def _not_found(req, exc): return Titled('Oh no!', Div('We could not find that page :('))
 
@@ -114,6 +114,11 @@ def message(messages: dict[str, bool]):
 def static(file:str):
     if not file.endswith('.css') and not file.endswith('.js'):
         return Response('File not found.', status_code=404)
-    return FileResponse(f'static/{file}')
+    cwd = os.getcwd()
+    if  cwd.endswith('bill'):
+        return FileResponse(f'static/{file}')
+    else:
+        return FileResponse(f'/root/bill/static/{file}')
+    
 
 serve() # Start the server
