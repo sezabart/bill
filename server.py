@@ -59,7 +59,7 @@ def material_form():
 from data import materials, categories
 
 @rt("/material_select_row")
-def material_select_row(required: bool = False):
+def material_select_row(required: bool = True):
     
     options = [Option('Select a material', hidden=True, disabled=True, selected=True)]
     for c in categories():
