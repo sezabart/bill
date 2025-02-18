@@ -22,7 +22,7 @@ venv/
 env/
 
 # Images
-.img
+*.img
 
 # Filled
 filled_en_fablab.odt
