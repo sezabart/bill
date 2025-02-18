@@ -9,7 +9,7 @@ from relatorio.templates.opendocument import Template
 
 def fill_template(bill, template_path: str, output_path: str):
     if not os.path.exists(template_path):
-        return False
+        raise FileExistsError(f'Cannot find template at {template_path}')
     template_data = {
         'user': bill.user,
         'bill_id': bill.id,

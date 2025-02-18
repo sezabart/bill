@@ -95,10 +95,10 @@ def post(user: str, material: list[int], quantity: list[int]):
     print(f'{bill=} {type(bill)=}')
     if not bill:
         return message({'Error occurred while saving the bill, contact the administrator.': True})
-    
-    file = fill_template(bill, 'template_en_fablab.odt', 'filled_en_fablab.odt')
-    if not file:
-        return message({'Error occurred while filling the template, contact the administrator.': True})
+    try:
+        fill_template(bill, 'template_en_fablab.odt', 'filled_en_fablab.odt')
+    except Exception as e:
+        return message({e: True})
     
     return message(print_file('filled_en_fablab.odt'))
     
