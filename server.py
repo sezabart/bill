@@ -96,11 +96,11 @@ def post(user: str, material: list[int], quantity: list[int]):
     if not bill:
         return message({'Error occurred while saving the bill, contact the administrator.': True})
     try:
-        fill_template(bill, 'template_en_fablab.odt', 'filled_en_fablab.odt')
+        fill_template(bill, 'template.jinja', 'filled.txt')
     except Exception as e:
         return message({e: True})
     
-    return message(print_file('filled_en_fablab.odt'))
+    return message({print_file('filled.txt'): False})
     
 
 def message(messages: dict[str, bool]):

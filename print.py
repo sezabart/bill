@@ -2,14 +2,16 @@ from data import bills, materials, categories
 
 import datetime
 import os
-import subprocess
 import json
-
-from relatorio.templates.opendocument import Template
+from jinja2 import Environment, FileSystemLoader
 
 def fill_template(bill, template_path: str, output_path: str):
     if not os.path.exists(template_path):
         raise FileExistsError(f'Cannot find template at {template_path}')
+    
+    env = Environment(loader=FileSystemLoader(os.path.dirname(template_path)))
+    template = env.get_template(os.path.basename(template_path))
+    
     template_data = {
         'user': bill.user,
         'bill_id': bill.id,
@@ -21,24 +23,17 @@ def fill_template(bill, template_path: str, output_path: str):
             'cost': f'{q * materials[m].cost_per_unit:.2f}',
             } for m, q in json.loads(bill.data).items()],
         'total': f'{bill.total:.2f}',
-        'print_timestamp': datetime.datetime.now().strftime('Printed %Y-%m-%d - %H:%M:%S'),
+        'print_timestamp': datetime.datetime.now().strftime('%Y-%m-%d - %H:%M:%S'),
     }
-    return open(output_path, 'wb').write(Template(source='', filepath=template_path).generate(o=template_data).render().getvalue())
     
-
+    with open(output_path, 'w') as f:
+        f.write(template.render(template_data))
+    
+    return output_path
 
 def print_file(file: str):
     if not os.path.exists(file):
-        print(f"File not found: {file}")
-        return {'File not found.': True}
-    if not file.endswith('.odt'):
-        print(f"Invalid file type: {file}")
-        return {'Invalid file type.': True}
-    try:
-        subprocess.run(['libreoffice', '--writer', '-p', f'{file}'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    except subprocess.CalledProcessError as e:
-        print(f"Error occurred: {e.stderr.decode()}")
-        return {'Error occurred while printing, contact the administrator.': True}
-    
-    return {'Successfully sent to printer.': False}
+        raise FileExistsError(f'Cannot find file at {file}')
+    os.system(f'lp {file}')
+    return 'Printed'
 

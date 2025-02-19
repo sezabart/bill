@@ -16,6 +16,8 @@
 *.pyc
 *.pyo
 *.pyd
+*.cython-312.pyc
+__pycache__/
 
 # Dependency directories
 venv/
@@ -25,4 +27,5 @@ env/
 *.img
 
 # Filled
-filled_en_fablab.odt
+filled*
+
