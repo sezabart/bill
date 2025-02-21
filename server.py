@@ -27,7 +27,8 @@ def get():
         material_form(), 
         Hr(),
         A('Made by Bart Smits, 2024', href='https://github.com/sezabart/bill', cls='secondary'),
-        style='text-align:center; max-width: 600px;'
+        Script("document.documentElement.requestFullscreen();"),
+        style='text-align:center; max-width: 600px;',
     )
 
 @rt("/material_form")

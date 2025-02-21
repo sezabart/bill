@@ -19,7 +19,7 @@ def fill_template(bill, template_path: str, output_path: str):
             'nice_name': materials[m].nice_name, 
             'system_name': materials[m].system_name,
             'quantity': f'{q}{categories[materials[m].category].unit}', 
-            'cost_per_unit': f'{materials[m].cost_per_unit}/{categories[materials[m].category].unit}', 
+            'cost_per_unit': f'{materials[m].cost_per_unit}€/{categories[materials[m].category].unit}', 
             'cost': f'{q * materials[m].cost_per_unit:.2f}',
             } for m, q in json.loads(bill.data).items()],
         'total': f'{bill.total:.2f}',

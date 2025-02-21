@@ -1,4 +1,4 @@
-Center Rog's FabLab
+Center Rog - FabLab - Bill
 {{ "=" * 31 }}
 
 User: {{ user }}
@@ -6,11 +6,11 @@ Bill No: {{ bill_id }}
 
 Items:
 {% for item in lines %}
-{{ item.nice_name }}:{{ item.quantity }}@€{{ item.cost_per_unit }}
->{{ item.system_name }} €{{ item.cost }}
+{{ item.system_name }}: {{ item.cost_per_unit }}
+{{ item.quantity }} {{ item.nice_name }}:  €{{ item.cost }}
 {{ "-" * 31 }}
 {% endfor %}
 
-      Total: €{{ total }}
+           Total: €{{ total }}
 {{ "=" * 31 }}
     {{ print_timestamp }}
