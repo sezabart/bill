@@ -21,11 +21,11 @@ def fill_template(bill, template_path: str, output_path: str):
             'quantity': f'{q}{categories[materials[m].category].unit}', 
             'cost_per_unit': f'{materials[m].cost_per_unit}€/{categories[materials[m].category].unit}', 
             'cost': f'{q * materials[m].cost_per_unit:.2f}',
-            } for m, q in json.loads(bill.data).items()],
+            } for m, q in json.loads(bill.data)],
         'total': f'{bill.total:.2f}',
         'print_timestamp': datetime.datetime.now().strftime('%Y-%m-%d - %H:%M:%S'),
     }
-    
+
     with open(output_path, 'w') as f:
         f.write(template.render(template_data))
     
@@ -34,6 +34,16 @@ def fill_template(bill, template_path: str, output_path: str):
 def print_file(file: str):
     if not os.path.exists(file):
         raise FileExistsError(f'Cannot find file at {file}')
+    
+    # Mock printer for testing purposes
+    if os.environ.get('MOCK_PRINTER') == '1':
+        print('MOCK PRINTER \n\n')
+        os.system(f'cat {file}')
+        print('\n\n')
+        return 'Printed (mock)'
+    
+    # Actual printing command
     os.system(f'lp {file}')
+
     return 'Printed'
 

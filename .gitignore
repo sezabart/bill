@@ -2,6 +2,7 @@
 *.env
 
 # Development files
+sqlite3.*
 *.log
 *.db
 *.db_shm
@@ -13,6 +14,7 @@
 *.code-workspace
 
 # Compiled Python files
+*.pyo
 *.pyc
 *.pyo
 *.pyd

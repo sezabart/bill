@@ -51,7 +51,7 @@ Bill, Category, Material = bills.dataclass(), categories.dataclass(), materials.
 
 
 def save_bill(user: str, data: zip) -> int:
-    data = {m: q for m, q in data if m in materials and q > 0}
+    data = [(m, q) for m, q in data if m in materials and q > 0]  # filter invalid materials/quantities, keep duplicates
     bill = Bill(
         lab_id=1, # This is a placeholder the FabLab
         user=user,
@@ -59,6 +59,6 @@ def save_bill(user: str, data: zip) -> int:
         valid=None, # TODO: implement validation via admin panel.
         paid=False, # TODO: implement payment validation via admin panel.
         data=data,
-        total=sum(materials[m].cost_per_unit * q for m, q in data.items()),
+        total=sum(materials[m].cost_per_unit * q for m, q in data),
     )
     return bills.insert(bill)
