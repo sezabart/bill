@@ -130,3 +130,29 @@ You should now have bill running on `192.168.<your subnet>.<the server>:5001`
 Print jobs should print, consult the CUPS page otherwise, to see where it goes wrong.
 
 ### 13. Profit?
+
+## Maintenance
+
+### VPN
+
+VPN is setup on the board using wireguard
+`sudo apt install wireguard`
+
+Then copy your conf to `/etc/wireguard` directory and name it something simple like `wg.conf`.
+Edit it to add PostUp functionality to make add the IP route every time:
+```sh
+[Interface]
+PrivateKey = ...
+Address = 192.168.<n>.<m>/24
+PostUp = ip route add 192.168.<n>.0/24 dev wg (.conf)
+PostDown = ip route del 192.168.<n>.0/24 dev wg
+
+[Peer]
+PublicKey = ...
+Endpoint = ...
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 25
+```
+
+
+
