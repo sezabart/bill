@@ -16,7 +16,7 @@ This is a working prototype by Bart Smits, being preformed in spare time in and 
 
 ## Prerequisites
 - ARM microcomputer (Orange Pi Zero)
-- Armbian Bookworm or better
+- [Armbian Bookworm or better](https://www.armbian.com/orange-pi-zero/)
 - Internet connection during installation
 - SSH access
 - TSP100 Thermal Printer, from step 8 onwards.
